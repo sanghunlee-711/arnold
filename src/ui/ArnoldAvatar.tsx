@@ -20,7 +20,12 @@ const mouthPath = (mood: ArnoldAvatarProps["mood"]) => {
 export const ArnoldAvatar = ({ parts, mood, size = 260 }: ArnoldAvatarProps) => {
   const armStroke = parts.arms === 0 ? 2 : 4;
   const legStroke = parts.legs === 0 ? 2 : 4;
-  const armStartY = parts.shoulder === 0 ? 95 : 90;
+  const highlight = "#f4a63b";
+  const skin = "#ffffff";
+  const outline = "#1a1a1a";
+  const blush = "#f4a19a";
+
+  const partFill = (state: PartState) => (state === 2 ? highlight : skin);
 
   return (
     <svg
@@ -30,42 +35,67 @@ export const ArnoldAvatar = ({ parts, mood, size = 260 }: ArnoldAvatarProps) => 
       role="img"
       aria-label="Arnold Mate avatar"
     >
-      <g stroke="#000" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none">
-        {parts.back === 2 ? (
-          <path d="M 72 78 Q 100 70 128 78 L 120 130 Q 100 145 80 130 Z" />
-        ) : null}
-        <line x1="95" y1="140" x2="85" y2="220" strokeWidth={legStroke} />
-        <line x1="105" y1="140" x2="115" y2="220" strokeWidth={legStroke} />
-        {parts.legs === 2 ? (
-          <>
-            <rect x="75" y="145" width="20" height="45" rx="10" />
-            <rect x="105" y="145" width="20" height="45" rx="10" />
-          </>
-        ) : null}
-        <rect x="80" y="70" width="40" height="70" rx="10" />
-        {parts.chest === 0 ? <line x1="100" y1="90" x2="100" y2="115" /> : null}
-        <line x1="80" y1={armStartY} x2="55" y2="135" strokeWidth={armStroke} />
-        <line x1="120" y1={armStartY} x2="145" y2="135" strokeWidth={armStroke} />
-        {parts.arms === 2 ? (
-          <>
-            <rect x="51" y="90" width="18" height="30" rx="9" />
-            <rect x="131" y="90" width="18" height="30" rx="9" />
-          </>
-        ) : null}
-        {parts.chest === 2 ? (
-          <rect x="72" y="90" width="56" height="32" rx="14" />
-        ) : null}
-        {parts.shoulder === 2 ? (
-          <>
-            <rect x="60" y="72" width="30" height="20" rx="10" />
-            <rect x="110" y="72" width="30" height="20" rx="10" />
-          </>
-        ) : null}
-        <circle cx="100" cy="45" r="22" />
-        <line x1="100" y1="60" x2="100" y2="70" />
-        <line x1="92" y1="40" x2="92" y2="45" />
-        <line x1="108" y1="40" x2="108" y2="45" />
-        <path d={mouthPath(mood)} />
+      <g stroke={outline} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none">
+        <g id="shadow" aria-hidden="true">
+          <ellipse cx="100" cy="245" rx="38" ry="8" fill="#2b2b2b" />
+        </g>
+        <g id="back" data-part="back">
+          <path
+            d="M 66 78 Q 100 64 134 78 L 122 130 Q 100 150 78 130 Z"
+            fill={parts.back === 2 ? highlight : skin}
+          />
+        </g>
+        <g id="legs" data-part="legs">
+          <line x1="93" y1="152" x2="86" y2="230" strokeWidth={legStroke} />
+          <line x1="107" y1="152" x2="114" y2="230" strokeWidth={legStroke} />
+          <rect x="74" y="230" width="26" height="12" rx="6" />
+          <rect x="100" y="230" width="26" height="12" rx="6" />
+          {parts.legs === 2 ? (
+            <>
+              <rect x="76" y="170" width="18" height="45" rx="9" fill={highlight} />
+              <rect x="106" y="170" width="18" height="45" rx="9" fill={highlight} />
+            </>
+          ) : null}
+          <path
+            d="M 78 150 Q 100 165 122 150 L 126 170 Q 100 178 74 170 Z"
+            fill={parts.legs === 2 ? highlight : skin}
+          />
+        </g>
+        <g id="torso" data-part="chest">
+          <path d="M 76 82 Q 100 76 124 82 L 128 150 Q 100 165 72 150 Z" fill={skin} />
+          <path
+            d="M 82 96 Q 100 88 118 96 L 112 120 Q 100 128 88 120 Z"
+            fill={partFill(parts.chest)}
+          />
+          <line x1="100" y1="104" x2="100" y2="140" />
+          <line x1="92" y1="115" x2="108" y2="115" />
+          <line x1="92" y1="130" x2="108" y2="130" />
+        </g>
+        <g id="shoulders" data-part="shoulder">
+          <path d="M 62 80 Q 72 70 86 76 Q 84 92 66 92 Z" fill={partFill(parts.shoulder)} />
+          <path d="M 138 80 Q 128 70 114 76 Q 116 92 134 92 Z" fill={partFill(parts.shoulder)} />
+        </g>
+        <g id="arms" data-part="arms">
+          <line x1="74" y1="90" x2="52" y2="138" strokeWidth={armStroke} />
+          <line x1="126" y1="90" x2="148" y2="138" strokeWidth={armStroke} />
+          <path d="M 52 138 Q 50 164 64 172 Q 70 174 72 166" strokeWidth={armStroke} />
+          <path d="M 148 138 Q 150 164 136 172 Q 130 174 128 166" strokeWidth={armStroke} />
+          {parts.arms === 2 ? (
+            <>
+              <rect x="46" y="106" width="20" height="30" rx="10" fill={highlight} />
+              <rect x="134" y="106" width="20" height="30" rx="10" fill={highlight} />
+            </>
+          ) : null}
+        </g>
+        <g id="head">
+          <circle cx="100" cy="46" r="22" fill={skin} />
+          <circle cx="86" cy="52" r="3.5" fill={blush} stroke="none" />
+          <circle cx="114" cy="52" r="3.5" fill={blush} stroke="none" />
+          <line x1="92" y1="40" x2="92" y2="46" />
+          <line x1="108" y1="40" x2="108" y2="46" />
+          <path d={mouthPath(mood)} />
+          <line x1="100" y1="68" x2="100" y2="82" />
+        </g>
       </g>
     </svg>
   );
